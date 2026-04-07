@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, Image, Platform } from 'react-native';
 
 export default function SignUp({ navigation }) {
     const [nome, setNome] = useState('');
@@ -53,12 +53,16 @@ export default function SignUp({ navigation }) {
         }
     };
 
+    const API_BASE = Platform.OS === 'android'
+        ? 'http://10.0.2.2:3000' // Android emulator -> host machine
+        : 'http://localhost:3000'; // web, iOS simulator or desktop
+
     const registrar = async () => {
         try {
             setCarregando(true);
             setErroCadastro('');
 
-            const response = await fetch('http://localhost:3000/signup', {
+            const response = await fetch(`${API_BASE}/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

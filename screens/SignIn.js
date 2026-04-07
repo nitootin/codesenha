@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, Image, Platform } from 'react-native';
 import { salvarToken } from '../services/storage';
 
 export default function SignIn({ navigation, route }) {
@@ -39,12 +39,16 @@ export default function SignIn({ navigation, route }) {
         }
     };
 
+    const API_BASE = Platform.OS === 'android'
+        ? 'http://10.0.2.2:3000'
+        : 'http://localhost:3000';
+
     const entrar = async () => {
         try {
             setCarregando(true);
             setErroLogin('');
 
-            const response = await fetch('http://localhost:3000/signin', {
+            const response = await fetch(`${API_BASE}/signin`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
