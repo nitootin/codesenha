@@ -145,3 +145,95 @@ app.listen(PORT, async () => {
     console.log(`Servidor rodando na porta ${PORT}`);
     await testarConexao();
 });
+
+
+function getUserIdFromHeader(req) {
+    const auth = req.headers.authorization;
+    if (!auth) return null;
+    const parts = auth.split(' ');
+    if (parts.length !== 2) return null;
+    const token = parts[1];
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        return decoded.id;
+    } catch (e) {
+        return null;
+    }
+}
+
+function requireAuth(req, res, next) {
+    const auth = req.headers.authorization;
+    if (!auth) return res.status(401).json({ erro: 'Token não fornecido.' });
+    const parts = auth.split(' ');
+    if (parts.length !== 2) return res.status(401).json({ erro: 'Authorization inválido.' });
+    const token = parts[1];
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.userId = decoded.id;
+        next();
+    } catch (e) {
+        return res.status(401).json({ erro: 'Token inválido ou expirado.' });
+    }
+}
+
+app.post('/historico', requireAuth, async (req, res) => {
+    try {
+        const { nomeAplicativo, senha } = req.body;
+        if (!nomeAplicativo || !senha) {
+            return res.status(400).json({ erro: 'Nome do aplicativo e senha são obrigatórios.' });
+        }
+
+        const usuarioId = req.userId;
+
+        await db.execute(
+            'INSERT INTO historico (usuario_id, nome_aplicativo, senha, criado_em) VALUES (?, ?, ?, NOW())',
+            [usuarioId, nomeAplicativo, senha]
+        );
+
+        return res.status(201).json({ mensagem: 'Senha salva no histórico.' });
+    } catch (error) {
+        console.error('Erro ao salvar historico:', error);
+        return res.status(500).json({ erro: 'Erro interno ao salvar histórico.' });
+    }
+});
+
+app.get('/historico', requireAuth, async (req, res) => {
+    try {
+        const usuarioId = req.userId;
+
+        const query = 'SELECT id, nome_aplicativo AS nomeAplicativo, senha, criado_em FROM historico WHERE usuario_id = ? ORDER BY criado_em DESC';
+        const [rows] = await db.execute(query, [usuarioId]);
+
+        const resultado = rows.map((r) => ({
+            id: r.id.toString(),
+            nomeAplicativo: r.nomeAplicativo,
+            senha: r.senha,
+        }));
+
+        return res.status(200).json(resultado);
+    } catch (error) {
+        console.error('Erro ao buscar historico:', error);
+        return res.status(500).json({ erro: 'Erro interno ao buscar histórico.' });
+    }
+});
+
+
+app.delete('/historico/:id', requireAuth, async (req, res) => {
+    try {
+        const usuarioId = req.userId;
+        const id = req.params.id;
+
+        const [result] = await db.execute('DELETE FROM historico WHERE id = ? AND usuario_id = ?', [id, usuarioId]);
+
+        
+        const affectedRows = result.affectedRows || result.affected_rows || 0;
+        if (affectedRows === 0) {
+            return res.status(404).json({ erro: 'Item não encontrado ou sem permissão.' });
+        }
+
+        return res.status(200).json({ mensagem: 'Item deletado.' });
+    } catch (error) {
+        console.error('Erro ao deletar historico:', error);
+        return res.status(500).json({ erro: 'Erro interno ao deletar histórico.' });
+    }
+});

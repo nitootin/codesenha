@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 import { useState } from 'react';
 import * as Clipboard from 'expo-clipboard';
-import { buscarHistorico, salvarHistorico } from '../services/storage';
+import { buscarHistorico, salvarHistorico, buscarToken } from '../services/storage';
+import { Platform } from 'react-native';
 
 export default function GeradorDeSenha({ navigation }) {
     const [senha, setSenha] = useState('Gere sua senha!');
@@ -44,18 +45,43 @@ export default function GeradorDeSenha({ navigation }) {
     };
 
     const criarSenha = async () => {
-        if (!nomeAplicativo || !senha || senha === 'Gere sua senha!') return;
+        
+        if (!nomeAplicativo || !nomeAplicativo.trim() || !senha || senha === 'Gere sua senha!') return;
 
         const historicoAtual = await buscarHistorico();
 
         const novoItem = {
             id: Date.now().toString(),
-            nomeAplicativo: nomeAplicativo,
+            nomeAplicativo: nomeAplicativo.trim(),
             senha: senha,
         };
 
         const novoHistorico = [novoItem, ...historicoAtual];
         await salvarHistorico(novoHistorico);
+
+        
+        try {
+            const token = await buscarToken();
+            if (token) {
+                const API_BASE = Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000';
+                const apiUrl = `${API_BASE}/historico`;
+
+                const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+
+                const res = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({ nomeAplicativo: novoItem.nomeAplicativo, senha: novoItem.senha }),
+                });
+
+                if (res.status === 401) {
+                    console.log('Usuário não autenticado ao salvar histórico no backend.');
+                }
+            }
+        } catch (e) {
+            
+            console.log('Erro ao salvar historico no backend:', e);
+        }
 
         setModalVisible(false);
         setNomeAplicativo('');
