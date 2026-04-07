@@ -42,7 +42,7 @@ app.post('/signup', async (req, res) => {
         }
 
         const [usuariosExistentes] = await db.execute(
-            'SELECT id FROM usuarios WHERE email = ?',
+            'SELECT id FROM gerador_senhas.usuarios WHERE email = ?',
             [emailFormatado]
         );
 
@@ -55,7 +55,7 @@ app.post('/signup', async (req, res) => {
         const senhaCriptografada = await bcrypt.hash(senha, 10);
 
         await db.execute(
-            'INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)',
+            'INSERT INTO gerador_senhas.usuarios (nome, email, senha) VALUES (?, ?, ?)',
             [nome.trim(), emailFormatado, senhaCriptografada]
         );
 
@@ -84,7 +84,7 @@ app.post('/signin', async (req, res) => {
         const emailFormatado = email.trim().toLowerCase();
 
         const [usuarios] = await db.execute(
-            'SELECT id, nome, email, senha FROM usuarios WHERE email = ?',
+            'SELECT id, nome, email, senha FROM gerador_senhas.usuarios WHERE email = ?',
             [emailFormatado]
         );
 
@@ -141,9 +141,41 @@ async function testarConexao() {
     }
 }
 
+async function ensureSchema() {
+    try {
+        
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS gerador_senhas.usuarios (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                nome VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                senha VARCHAR(255) NOT NULL,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB;
+        `);
+
+        
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS gerador_senhas.historico (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                usuario_id INT NOT NULL,
+                nome_aplicativo VARCHAR(255) NOT NULL,
+                senha VARCHAR(255) NOT NULL,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT fk_historico_usuario FOREIGN KEY (usuario_id) REFERENCES gerador_senhas.usuarios(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB;
+        `);
+
+        console.log('Schema verificado/criado (usuarios, historico)');
+    } catch (error) {
+        console.error('Erro ao garantir schema do banco:', error);
+    }
+}
+
 app.listen(PORT, async () => {
     console.log(`Servidor rodando na porta ${PORT}`);
     await testarConexao();
+    await ensureSchema();
 });
 
 
@@ -186,7 +218,7 @@ app.post('/historico', requireAuth, async (req, res) => {
         const usuarioId = req.userId;
 
         await db.execute(
-            'INSERT INTO historico (usuario_id, nome_aplicativo, senha, criado_em) VALUES (?, ?, ?, NOW())',
+            'INSERT INTO gerador_senhas.historico (usuario_id, nome_aplicativo, senha, criado_em) VALUES (?, ?, ?, NOW())',
             [usuarioId, nomeAplicativo, senha]
         );
 
@@ -201,7 +233,7 @@ app.get('/historico', requireAuth, async (req, res) => {
     try {
         const usuarioId = req.userId;
 
-        const query = 'SELECT id, nome_aplicativo AS nomeAplicativo, senha, criado_em FROM historico WHERE usuario_id = ? ORDER BY criado_em DESC';
+    const query = 'SELECT id, nome_aplicativo AS nomeAplicativo, senha, criado_em FROM gerador_senhas.historico WHERE usuario_id = ? ORDER BY criado_em DESC';
         const [rows] = await db.execute(query, [usuarioId]);
 
         const resultado = rows.map((r) => ({
@@ -223,7 +255,7 @@ app.delete('/historico/:id', requireAuth, async (req, res) => {
         const usuarioId = req.userId;
         const id = req.params.id;
 
-        const [result] = await db.execute('DELETE FROM historico WHERE id = ? AND usuario_id = ?', [id, usuarioId]);
+    const [result] = await db.execute('DELETE FROM gerador_senhas.historico WHERE id = ? AND usuario_id = ?', [id, usuarioId]);
 
         
         const affectedRows = result.affectedRows || result.affected_rows || 0;

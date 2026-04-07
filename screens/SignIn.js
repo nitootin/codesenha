@@ -69,7 +69,7 @@ export default function SignIn({ navigation, route }) {
             if (!response.ok) {
                 console.log('ERRO LOGIN:', data);
                 setErroLogin(
-                    data.erro || data.mensagem || '♥ E-mail ou senha inválidos. ♥'
+                    data.erro || data.mensagem || 'E-mail ou senha inválidos.'
                 );
                 return;
             }
@@ -83,7 +83,7 @@ export default function SignIn({ navigation, route }) {
         } catch (error) {
             console.log('ERRO FETCH SIGNIN:', error);
             setErroLogin(
-                '♥ Erro ao conectar. Tente novamente! ♥'
+                'Erro ao conectar. Tente novamente!'
             );
         } finally {
             setCarregando(false);
@@ -93,7 +93,7 @@ export default function SignIn({ navigation, route }) {
     return (
         <View style={styles.container}>
             <Image
-                source={require('../assets/cadeadinho.jpg')}
+                source={require('../assets/icon.png')}
                 style={styles.image}
             />
 
@@ -103,7 +103,7 @@ export default function SignIn({ navigation, route }) {
             <TextInput
                 style={styles.input}
                 placeholder="E-mail"
-                placeholderTextColor="#c97b95"
+                placeholderTextColor="#6FB3FF"
                 value={email}
                 onChangeText={handleChangeEmail}
                 keyboardType="email-address"
@@ -112,13 +112,13 @@ export default function SignIn({ navigation, route }) {
             />
 
             {email.trim() !== '' && !emailValido && (
-                <Text style={styles.errorText}>♥ Informe um e-mail válido! ♥</Text>
+                <Text style={styles.errorText}>Informe um e-mail válido!</Text>
             )}
 
             <TextInput
                 style={styles.input}
                 placeholder="Senha"
-                placeholderTextColor="#c97b95"
+                placeholderTextColor="#6FB3FF"
                 value={senha}
                 onChangeText={handleChangeSenha}
                 secureTextEntry
@@ -163,32 +163,32 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 30,
         fontWeight: 'bold',
-        color: '#eb6589',
+    color: '#6FB3FF',
         marginBottom: 8,
     },
     subtitle: {
         fontSize: 14,
-        color: '#eb6589',
+    color: '#6FB3FF',
         marginBottom: 24,
         textAlign: 'center',
     },
     input: {
         width: '50%',
-        backgroundColor: '#ffe7ed',
+        backgroundColor: '#E6F7FF',
         borderWidth: 2,
-        borderColor: '#eb6589',
+        borderColor: '#4A9BFF',
         borderRadius: 12,
         paddingHorizontal: 14,
         paddingVertical: 12,
         marginBottom: 14,
-        color: '#eb6589',
+        color: '#6FB3FF',
         fontSize: 15,
     },
     button: {
         width: '50%',
-        backgroundColor: '#eb6589',
+        backgroundColor: '#6FB3FF',
         borderWidth: 2,
-        borderColor: '#c10a38',
+        borderColor: '#2A6FB3',
         borderRadius: 12,
         paddingVertical: 12,
         marginTop: 6,
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     linkText: {
-        color: '#eb6589',
+        color: '#6FB3FF',
         fontSize: 14,
     },
     linkHighlight: {
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     },
     errorText: {
         width: '50%',
-        color: '#ff265c',
+        color: '#FF4D4D',
         fontSize: 13,
         marginTop: -6,
         marginBottom: 10,

@@ -1,6 +1,6 @@
 import Svg, { Path } from 'react-native-svg';
 
-export default function ShowIcon({ size = 22, color = '#eb6589' }) {
+export default function ShowIcon({ size = 22, color = '#6FB3FF' }) {
     return (
         <Svg width={size} height={size} viewBox="0 0 512 512">
             <Path

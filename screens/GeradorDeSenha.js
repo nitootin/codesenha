@@ -92,7 +92,7 @@ export default function GeradorDeSenha({ navigation }) {
             <Text style={styles.title}>Gerador de senha</Text>
 
             <Image
-                source={require('../assets/cadeadinho.jpg')}
+                source={require('../assets/icon.png')}
                 style={styles.image}
             />
 
@@ -102,7 +102,7 @@ export default function GeradorDeSenha({ navigation }) {
 
             <View style={styles.buttonsArea}>
                 <Pressable style={styles.button} onPress={generatePassword}>
-                    <Text style={styles.buttonText}>Gerar ♥</Text>
+                    <Text style={styles.buttonText}>Gerar</Text>
                 </Pressable>
 
                 <Pressable
@@ -114,14 +114,14 @@ export default function GeradorDeSenha({ navigation }) {
                     onPress={abrirModal}
                     disabled={senha === 'Gere sua senha!'}
                 >
-                    <Text style={styles.buttonText}>Salvar ♥</Text>
+                    <Text style={styles.buttonText}>Salvar</Text>
                 </Pressable>
 
                 <Pressable
                     style={[styles.button, styles.marginTop]}
                     onPress={copyToClipboard}
                 >
-                    <Text style={styles.buttonText}>Copiar ♥</Text>
+                    <Text style={styles.buttonText}>Copiar</Text>
                 </Pressable>
             </View>
 
@@ -129,7 +129,7 @@ export default function GeradorDeSenha({ navigation }) {
                 style={{ marginTop: 15 }}
                 onPress={() => navigation.navigate('Historico')}
             >
-                <Text style={{ color: '#eb6589' }}>Acessar senhas</Text>
+                <Text style={{ color: '#6FB3FF' }}>Acessar senhas</Text>
             </Pressable>
 
             <Modal
@@ -139,8 +139,8 @@ export default function GeradorDeSenha({ navigation }) {
             >
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalBox}>
-                        <Text style={[styles.modalTitle, { color: '#eb6589' }]}>Cadastro de senha</Text>
-                        <Text style={[styles.label, { color: '#eb6589' }]}>Nome do aplicativo</Text>
+                        <Text style={[styles.modalTitle, { color: '#6FB3FF' }]}>Cadastro de senha</Text>
+                        <Text style={[styles.label, { color: '#6FB3FF' }]}>Nome do aplicativo</Text>
                         <TextInput
                             style={styles.input}
                             value={nomeAplicativo}
@@ -148,7 +148,7 @@ export default function GeradorDeSenha({ navigation }) {
                             placeholder="ex: Facebook"
                         />
 
-                        <Text style={[styles.label, { color: '#eb6589' }]}>Senha gerada</Text>
+                        <Text style={[styles.label, { color: '#6FB3FF' }]}>Senha gerada</Text>
                         <TextInput
                             style={styles.input}
                             value={senha}
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     title: {
-        color: '#eb6589',
+        color: '#6FB3FF',
         fontSize: 28,
         fontWeight: 'bold'
     },
@@ -201,16 +201,16 @@ const styles = StyleSheet.create({
         height: 120
     },
     codeArea: {
-        backgroundColor: '#ffe7ed',
+        backgroundColor: '#E6F7FF',
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 12,
         borderWidth: 2,
-        borderColor: '#eb6589',
+        borderColor: '#4A9BFF',
         width: '35%'
     },
     codeAreaText: {
-        color: '#eb6589',
+        color: '#2A7BD4',
         textAlign: 'center',
         fontSize: 14,
         fontWeight: 'bold'
@@ -221,21 +221,21 @@ const styles = StyleSheet.create({
         marginTop: 10
     },
     button: {
-        backgroundColor: '#eb6589',
+        backgroundColor: '#6FB3FF',
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 12,
         borderWidth: 2,
-        borderColor: '#c10a38',
+        borderColor: '#2A6FB3',
         width: '35%'
     },
     modalButton: {
-        backgroundColor: '#eb6589',
+        backgroundColor: '#6FB3FF',
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 12,
         borderWidth: 2,
-        borderColor: '#c10a38',
+        borderColor: '#2A6FB3',
         width: '100%',
         marginTop: 10
     },

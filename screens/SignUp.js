@@ -84,7 +84,7 @@ export default function SignUp({ navigation }) {
 
             if (!response.ok) {
                 setErroCadastro(
-                    data.erro || data.mensagem || '♥ Não foi possível realizar o cadastro. ♥'
+                    data.erro || data.mensagem || 'Não foi possível realizar o cadastro.'
                 );
                 return;
             }
@@ -93,7 +93,7 @@ export default function SignUp({ navigation }) {
         } catch (error) {
             console.log('ERRO FETCH SIGNUP:', error);
             setErroCadastro(
-                '♥ Erro ao conectar. Tente novamente! ♥'
+                'Erro ao conectar. Tente novamente!'
             );
         } finally {
             setCarregando(false);
@@ -103,7 +103,7 @@ export default function SignUp({ navigation }) {
     return (
         <View style={styles.container}>
             <Image
-                source={require('../assets/cadeadinho.jpg')}
+                source={require('../assets/icon.png')}
                 style={styles.image}
             />
 
@@ -113,7 +113,7 @@ export default function SignUp({ navigation }) {
             <TextInput
                 style={styles.input}
                 placeholder="Nome"
-                placeholderTextColor="#c97b95"
+                placeholderTextColor="#6FB3FF"
                 value={nome}
                 onChangeText={handleChangeNome}
             />
@@ -121,7 +121,7 @@ export default function SignUp({ navigation }) {
             <TextInput
                 style={styles.input}
                 placeholder="E-mail"
-                placeholderTextColor="#c97b95"
+                placeholderTextColor="#6FB3FF"
                 value={email}
                 onChangeText={handleChangeEmail}
                 keyboardType="email-address"
@@ -130,13 +130,13 @@ export default function SignUp({ navigation }) {
             />
 
             {email.trim() !== '' && !emailValido && (
-                <Text style={styles.errorText}>♥ Informe um e-mail válido! ♥</Text>
+                <Text style={styles.errorText}>Informe um e-mail válido!</Text>
             )}
 
             <TextInput
                 style={styles.input}
                 placeholder="Senha"
-                placeholderTextColor="#c97b95"
+                placeholderTextColor="#6FB3FF"
                 value={senha}
                 onChangeText={handleChangeSenha}
                 secureTextEntry
@@ -145,14 +145,14 @@ export default function SignUp({ navigation }) {
             <TextInput
                 style={styles.input}
                 placeholder="Confirmar senha"
-                placeholderTextColor="#c97b95"
+                placeholderTextColor="#6FB3FF"
                 value={confirmarSenha}
                 onChangeText={handleChangeConfirmarSenha}
                 secureTextEntry
             />
 
             {confirmarSenha !== '' && !senhasIguais && (
-                <Text style={styles.errorText}>♥ As senhas precisam ser iguais! ♥</Text>
+                <Text style={styles.errorText}>As senhas precisam ser iguais!</Text>
             )}
 
             {erroCadastro !== '' && (
@@ -194,32 +194,32 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 30,
         fontWeight: 'bold',
-        color: '#eb6589',
+        color: '#6FB3FF',
         marginBottom: 8,
     },
     subtitle: {
         fontSize: 14,
-        color: '#eb6589',
+        color: '#6FB3FF',
         marginBottom: 24,
         textAlign: 'center',
     },
     input: {
         width: '50%',
-        backgroundColor: '#ffe7ed',
+        backgroundColor: '#E6F7FF',
         borderWidth: 2,
-        borderColor: '#eb6589',
+        borderColor: '#4A9BFF',
         borderRadius: 12,
         paddingHorizontal: 14,
         paddingVertical: 12,
         marginBottom: 14,
-        color: '#eb6589',
+        color: '#6FB3FF',
         fontSize: 15,
     },
     button: {
         width: '50%',
-        backgroundColor: '#eb6589',
+        backgroundColor: '#6FB3FF',
         borderWidth: 2,
-        borderColor: '#c10a38',
+        borderColor: '#2A6FB3',
         borderRadius: 12,
         paddingVertical: 12,
         marginTop: 6,
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     linkText: {
-        color: '#eb6589',
+        color: '#6FB3FF',
         fontSize: 14,
     },
     linkHighlight: {
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     },
     errorText: {
         width: '50%',
-        color: '#ff265c',
+        color: '#FF4D4D',
         fontSize: 13,
         marginTop: -6,
         marginBottom: 10,

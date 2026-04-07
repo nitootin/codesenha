@@ -95,7 +95,7 @@ export default function Historico({ navigation }) {
                                 >
                                     <ShowIcon
                                         size={22}
-                                        color={visiveis[item.id] ? "#e6b6c3" : "#eb6589"}
+                                        color={visiveis[item.id] ? "#D6EDFF" : "#6FB3FF"}
                                     />
                                 </Pressable>
 
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 28,
         fontWeight: "bold",
-        color: "#eb6589",
+    color: "#6FB3FF",
         marginBottom: 28,
     },
 
@@ -150,9 +150,9 @@ const styles = StyleSheet.create({
 
     card: {
         width: "100%",
-        backgroundColor: "#fff5f8",
+    backgroundColor: "#F0FBFF",
         borderWidth: 2,
-        borderColor: "#eb6589",
+    borderColor: "#4A9BFF",
         borderRadius: 18,
         paddingVertical: 18,
         paddingHorizontal: 20,
@@ -170,13 +170,13 @@ const styles = StyleSheet.create({
     appText: {
         fontSize: 17,
         fontWeight: "bold",
-        color: "#d94f79",
+    color: "#2A7BD4",
         marginBottom: 6,
     },
 
     senhaText: {
         fontSize: 15,
-        color: "#c97b95",
+    color: "#6FB3FF",
         fontWeight: "600",
         letterSpacing: 0.5,
     },
@@ -198,21 +198,21 @@ const styles = StyleSheet.create({
 
     icon: {
         fontSize: 20,
-        color: "#eb6589",
+    color: "#6FB3FF",
         fontWeight: "bold",
     },
 
     empty: {
-        color: "#eb6589",
+    color: "#6FB3FF",
         marginTop: 10,
         fontWeight: "500",
     },
 
     voltarButton: {
         marginTop: 20,
-        backgroundColor: "#eb6589",
+    backgroundColor: "#6FB3FF",
         borderWidth: 2,
-        borderColor: "#c10a38",
+    borderColor: "#2A6FB3",
         paddingVertical: 12,
         borderRadius: 14,
         width: "22%",

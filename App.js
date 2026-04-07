@@ -47,7 +47,7 @@ export default function App() {
           backgroundColor: '#fff',
         }}
       >
-        <ActivityIndicator size="large" color="#eb6589" />
+  <ActivityIndicator size="large" color="#6FB3FF" />
       </View>
     );
   }
@@ -58,7 +58,7 @@ export default function App() {
         initialRouteName={rotaInicial}
         screenOptions={{
           headerStyle: { backgroundColor: '#fff' },
-          headerTintColor: '#eb6589',
+          headerTintColor: '#6FB3FF',
           headerTitleStyle: { fontWeight: 'bold' },
         }}
       >
@@ -97,9 +97,9 @@ export default function App() {
                   paddingVertical: 4,
                 }}
               >
-                <Text
+                    <Text
                   style={{
-                    color: '#eb6589',
+                    color: '#6FB3FF',
                     fontWeight: 'bold',
                     fontSize: 16,
                   }}
