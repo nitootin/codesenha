@@ -1,144 +1,194 @@
-# CodeSenha
+# Projeto Codesenha
 
-Sistema fullstack desenvolvido para gerenciamento de dados e operações, com backend em **Spring Boot** e frontend em **React**, focado em organização, escalabilidade e boas práticas de desenvolvimento.
+Sistema composto por:
 
----
-
-## Sobre o Projeto
-
-O **CodeSenha** é uma aplicação web completa que permite gerenciar informações de forma estruturada, com comunicação entre frontend e backend via API REST.
-
----
-
-##  Tecnologias Utilizadas
-
-### Backend
-
-* Java 17+
-* Spring Boot
-* Spring Data JPA
-* Hibernate
-* Maven
-
-### Frontend
-
-* React
-* JavaScript (ES6+)
-* Axios
-* CSS
+* Frontend: Expo (React Native)
+* Backend: Node.js com Express
+* Banco de dados: MySQL
+* Ambiente containerizado com Docker
 
 ---
 
-## Estrutura do Projeto
+# Pré-requisitos
+
+Antes de iniciar, instale:
+
+* Docker Desktop
+* Node.js (versão 18 ou superior)
+* Android Studio (opcional, para emulador)
+
+---
+
+# Execução com Docker (backend + banco)
+
+Na raiz do projeto, execute:
 
 ```bash
-codesenha/
-│
-├── backend/                # API Spring Boot
-├── frontend/               # Aplicação React
-└── README.md
+docker compose up --build
+```
+
+Para parar os containers:
+
+```bash
+docker compose down
+```
+
+Para remover também os dados do banco:
+
+```bash
+docker compose down -v
 ```
 
 ---
 
-## Como Executar o Projeto
+# Portas do sistema
 
-### Pré-requisitos
+| Serviço      | Endereço                                       |
+| ------------ | ---------------------------------------------- |
+| Frontend Web | [http://localhost:8081](http://localhost:8081) |
+| Backend API  | [http://localhost:3000](http://localhost:3000) |
+| MySQL        | localhost:3307                                 |
 
-Antes de começar, você precisa ter instalado:
-
-* Java 17+
-* Node.js 18+
-* Maven
-* Git
-
----
-
-### 1. Clonar o repositório
-
-```bash
-git clone https://github.com/seu-usuario/codesenha.git
-cd codesenha
-```
+Observação: o MySQL não é acessado pelo navegador. Utilize ferramentas como DBeaver ou MySQL Workbench.
 
 ---
 
-### 2. Rodar o Backend (Spring Boot)
+# Rodando o frontend (WEB)
 
-```bash
-cd backend
-mvn spring-boot:run
-```
+## Opção 1 — Via Docker
 
-ou no Windows:
+Acesse:
 
-```bash
-mvnw.cmd spring-boot:run
-```
-
-A API estará disponível em:
-http://localhost:8080
+[http://localhost:8081](http://localhost:8081)
 
 ---
 
-### 3. Rodar o Frontend (React)
+## Opção 2 — Rodando localmente (recomendado)
+
+Na raiz do projeto:
 
 ```bash
-cd frontend
 npm install
-npm run dev
+npx expo start
 ```
 
-ou:
+Depois pressione:
 
 ```bash
-npm start
+w
 ```
 
-A aplicação estará disponível em:
-http://localhost:5173
+Isso abrirá o projeto no navegador.
 
 ---
 
-## Integração
+# Rodando no Android Studio (emulador)
 
-O frontend consome a API via Axios utilizando:
+## 1. Iniciar o emulador
 
-```js
-http://localhost:8080/api
+* Abra o Android Studio
+* Vá em Device Manager
+* Inicie um dispositivo virtual
+
+---
+
+## 2. Rodar o frontend
+
+Na raiz do projeto:
+
+```bash
+npx expo start
+```
+
+Com o emulador aberto, pressione:
+
+```bash
+a
+```
+
+Ou clique em "Run on Android device/emulator".
+
+---
+
+# Configuração da API para Android
+
+Se o aplicativo estiver chamando:
+
+[http://localhost:3000](http://localhost:3000)
+
+Isso não funcionará no emulador.
+
+Substitua por:
+
+[http://10.0.2.2:3000](http://10.0.2.2:3000)
+
+Esse endereço permite que o emulador acesse o backend rodando na sua máquina.
+
+---
+
+# Rodando no celular com Expo Go
+
+## 1. Instale o aplicativo
+
+Baixe o app Expo Go:
+
+* Android: Google Play
+* iOS: App Store
+
+---
+
+## 2. Inicie o projeto
+
+```bash
+npx expo start
 ```
 
 ---
 
-## Funcionalidades
+## 3. Conectar
 
-* Cadastro de dados
-* Listagem de informações
-* Integração frontend/backend
-* Estrutura escalável
+* Escaneie o QR Code exibido no terminal ou navegador
+* O app abrirá automaticamente no celular
 
 ---
 
-## Boas Práticas
+# Estrutura do projeto
 
-* Arquitetura em camadas (Controller, Service, Repository)
-* Uso de DTOs
-* Consumo de API com Axios
-* Organização modular
+```
+codesenha/
+├── docker-compose.yml
+├── Dockerfile.frontend
+├── backend/
+│   ├── Dockerfile
+│   ├── server.js
+│   ├── db.js
+│   └── init.sql
+├── screens/
+├── services/
+├── assets/
+├── App.js
+├── index.js
+└── package.json
+```
 
 ---
 
-## Melhorias Futuras
+# Observações importantes
 
-* Autenticação com JWT
-* Controle de usuários
-* Dashboard com métricas
-* Deploy em produção
+* Para desenvolvimento mobile, utilize o frontend rodando localmente (não via Docker)
+* O backend pode permanecer rodando via Docker normalmente
+* O Expo dentro do Docker é mais indicado para uso web
 
 ---
 
-## Autor
+# Teste rápido
 
-Phillip Alves Medeiros
+Após subir tudo:
 
+Backend:
+[http://localhost:3000](http://localhost:3000)
 
+Frontend:
+[http://localhost:8081](http://localhost:8081)
+
+Se ambos responderem, o ambiente está funcionando corretamente

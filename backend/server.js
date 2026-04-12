@@ -6,8 +6,8 @@ const bcrypt = require('bcryptjs');
 const db = require('./db');
 
 const app = express();
-const PORT = 3000;
-const JWT_SECRET = 'senha-secreta-do-projeto';
+const PORT = Number(process.env.PORT || 3000);
+const JWT_SECRET = process.env.JWT_SECRET || 'senha-secreta-do-projeto';
 
 app.use(cors());
 app.use(bodyParser.json());
