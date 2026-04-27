@@ -1,17 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import {
-    StyleSheet,
-    Text,
-    View,
-    Image,
-    Pressable,
-    Modal,
-    TextInput
-} from 'react-native';
+import { Text, View, Image, Pressable, Modal, TextInput, Platform } from 'react-native';
 import { useState } from 'react';
 import * as Clipboard from 'expo-clipboard';
 import { buscarHistorico, salvarHistorico, buscarToken } from '../services/storage';
-import { Platform } from 'react-native';
 
 export default function GeradorDeSenha({ navigation }) {
     const [senha, setSenha] = useState('Gere sua senha!');
@@ -20,8 +11,8 @@ export default function GeradorDeSenha({ navigation }) {
 
     const generatePassword = () => {
         let password = '';
-        let characters = 'AaEeIiOoUu12345!@#$%';
-        let passwordLength = 8;
+        const characters = 'AaEeIiOoUu12345!@#$%';
+        const passwordLength = 8;
 
         for (let i = 0; i < passwordLength; i++) {
             password += characters.charAt(
@@ -45,7 +36,6 @@ export default function GeradorDeSenha({ navigation }) {
     };
 
     const criarSenha = async () => {
-        
         if (!nomeAplicativo || !nomeAplicativo.trim() || !senha || senha === 'Gere sua senha!') return;
 
         const historicoAtual = await buscarHistorico();
@@ -53,13 +43,12 @@ export default function GeradorDeSenha({ navigation }) {
         const novoItem = {
             id: Date.now().toString(),
             nomeAplicativo: nomeAplicativo.trim(),
-            senha: senha,
+            senha,
         };
 
         const novoHistorico = [novoItem, ...historicoAtual];
         await salvarHistorico(novoHistorico);
 
-        
         try {
             const token = await buscarToken();
             if (token) {
@@ -79,101 +68,97 @@ export default function GeradorDeSenha({ navigation }) {
                 }
             }
         } catch (e) {
-            
-            console.log('Erro ao salvar historico no backend:', e);
+            console.log('Erro ao salvar histórico no backend:', e);
         }
 
         setModalVisible(false);
         setNomeAplicativo('');
     };
 
+    const senhaGerada = senha !== 'Gere sua senha!';
+    const podeSalvar = nomeAplicativo.trim() !== '' && senhaGerada;
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Gerador de senha</Text>
+        <View className="flex-1 items-center justify-center bg-white px-6">
+            <Text className="text-[28px] font-bold text-[#6FB3FF]">Gerador de senha</Text>
 
             <Image
                 source={require('../assets/icon.png')}
-                style={styles.image}
+                style={{ width: 96, height: 96 }}
+                resizeMode="contain"
             />
 
-            <View style={styles.codeArea}>
-                <Text style={styles.codeAreaText}>{senha}</Text>
+            <View className="w-full max-w-md rounded-xl border-2 border-[#4A9BFF] bg-[#E6F7FF] px-5 py-2.5">
+                <Text className="text-center text-sm font-bold text-[#2A7BD4]">{senha}</Text>
             </View>
 
-            <View style={styles.buttonsArea}>
-                <Pressable style={styles.button} onPress={generatePassword}>
-                    <Text style={styles.buttonText}>Gerar</Text>
+            <View className="mt-2.5 w-full items-center">
+                <Pressable className="w-full max-w-md rounded-xl border-2 border-[#2A6FB3] bg-[#6FB3FF] px-5 py-2.5" onPress={generatePassword}>
+                    <Text className="text-center text-white">Gerar</Text>
                 </Pressable>
 
                 <Pressable
-                    style={[
-                        styles.button,
-                        styles.marginTop,
-                        senha === 'Gere sua senha!' && styles.buttonDisabled
-                    ]}
+                    className={`mt-2.5 w-full max-w-md rounded-xl border-2 border-[#2A6FB3] bg-[#6FB3FF] px-5 py-2.5 ${!senhaGerada ? 'opacity-50' : ''}`}
                     onPress={abrirModal}
-                    disabled={senha === 'Gere sua senha!'}
+                    disabled={!senhaGerada}
                 >
-                    <Text style={styles.buttonText}>Salvar</Text>
+                    <Text className="text-center text-white">Salvar</Text>
                 </Pressable>
 
                 <Pressable
-                    style={[styles.button, styles.marginTop]}
+                    className="mt-2.5 w-full max-w-md rounded-xl border-2 border-[#2A6FB3] bg-[#6FB3FF] px-5 py-2.5"
                     onPress={copyToClipboard}
                 >
-                    <Text style={styles.buttonText}>Copiar</Text>
+                    <Text className="text-center text-white">Copiar</Text>
                 </Pressable>
             </View>
 
             <Pressable
-                style={{ marginTop: 15 }}
+                className="mt-[15px]"
                 onPress={() => navigation.navigate('Historico')}
             >
-                <Text style={{ color: '#6FB3FF' }}>Acessar senhas</Text>
+                <Text className="text-[#6FB3FF]">Acessar senhas</Text>
             </Pressable>
 
             <Modal
                 visible={modalVisible}
-                transparent={true}
+                transparent
                 animationType="fade"
             >
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalBox}>
-                        <Text style={[styles.modalTitle, { color: '#6FB3FF' }]}>Cadastro de senha</Text>
-                        <Text style={[styles.label, { color: '#6FB3FF' }]}>Nome do aplicativo</Text>
+                <View className="flex-1 items-center justify-center bg-black/40 px-6">
+                    <View className="w-full max-w-sm rounded-xl bg-white p-5">
+                        <Text className="mb-[15px] text-center text-lg font-bold text-[#6FB3FF]">Cadastro de senha</Text>
+                        <Text className="mb-1.5 font-bold text-[#6FB3FF]">Nome do aplicativo</Text>
                         <TextInput
-                            style={styles.input}
+                            className="mb-3 rounded-lg border border-[#999] px-2.5 py-2"
                             value={nomeAplicativo}
                             onChangeText={setNomeAplicativo}
                             placeholder="ex: Facebook"
                         />
 
-                        <Text style={[styles.label, { color: '#6FB3FF' }]}>Senha gerada</Text>
+                        <Text className="mb-1.5 font-bold text-[#6FB3FF]">Senha gerada</Text>
                         <TextInput
-                            style={styles.input}
+                            className="mb-3 rounded-lg border border-[#999] px-2.5 py-2"
                             value={senha}
                             editable={false}
                         />
 
                         <Pressable
-                            style={[
-                                styles.modalButton,
-                                (!nomeAplicativo || senha === 'Gere sua senha!') && styles.buttonDisabled
-                            ]}
+                            className={`mt-2.5 w-full rounded-xl border-2 border-[#2A6FB3] bg-[#6FB3FF] px-5 py-2.5 ${!podeSalvar ? 'opacity-50' : ''}`}
                             onPress={criarSenha}
-                            disabled={!nomeAplicativo || senha === 'Gere sua senha!'}
+                            disabled={!podeSalvar}
                         >
-                            <Text style={styles.buttonText}>Salvar</Text>
+                            <Text className="text-center text-white">Salvar</Text>
                         </Pressable>
 
                         <Pressable
-                            style={[styles.modalButton, styles.marginTop]}
+                            className="mt-2.5 w-full rounded-xl border-2 border-[#2A6FB3] bg-[#6FB3FF] px-5 py-2.5"
                             onPress={() => {
                                 setModalVisible(false);
                                 setNomeAplicativo('');
                             }}
                         >
-                            <Text style={styles.buttonText}>Cancelar</Text>
+                            <Text className="text-center text-white">Cancelar</Text>
                         </Pressable>
                     </View>
                 </View>
@@ -183,100 +168,3 @@ export default function GeradorDeSenha({ navigation }) {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    title: {
-        color: '#6FB3FF',
-        fontSize: 28,
-        fontWeight: 'bold'
-    },
-    image: {
-        width: 120,
-        height: 120
-    },
-    codeArea: {
-        backgroundColor: '#E6F7FF',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 12,
-        borderWidth: 2,
-        borderColor: '#4A9BFF',
-        width: '35%'
-    },
-    codeAreaText: {
-        color: '#2A7BD4',
-        textAlign: 'center',
-        fontSize: 14,
-        fontWeight: 'bold'
-    },
-    buttonsArea: {
-        width: '100%',
-        alignItems: 'center',
-        marginTop: 10
-    },
-    button: {
-        backgroundColor: '#6FB3FF',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 12,
-        borderWidth: 2,
-        borderColor: '#2A6FB3',
-        width: '35%'
-    },
-    modalButton: {
-        backgroundColor: '#6FB3FF',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 12,
-        borderWidth: 2,
-        borderColor: '#2A6FB3',
-        width: '100%',
-        marginTop: 10
-    },
-    buttonText: {
-        color: 'white',
-        textAlign: 'center'
-    },
-    marginTop: {
-        marginTop: 10
-    },
-    buttonDisabled: {
-        opacity: 0.5
-    },
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.45)',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    modalBox: {
-        width: '80%',
-        backgroundColor: '#fff',
-        borderRadius: 12,
-        padding: 20
-    },
-    modalTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 15,
-        textAlign: 'center'
-    },
-    label: {
-        marginBottom: 5,
-        fontWeight: 'bold'
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#999',
-        borderRadius: 8,
-        paddingHorizontal: 10,
-        paddingVertical: 8,
-        marginBottom: 12
-    }
-});

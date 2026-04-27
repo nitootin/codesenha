@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Image, Platform } from 'react-native';
+import { View, Text, TextInput, Pressable, Image, Platform } from 'react-native';
 import { salvarToken } from '../services/storage';
 
 export default function SignIn({ navigation, route }) {
@@ -82,26 +82,24 @@ export default function SignIn({ navigation, route }) {
             });
         } catch (error) {
             console.log('ERRO FETCH SIGNIN:', error);
-            setErroLogin(
-                'Erro ao conectar. Tente novamente!'
-            );
+            setErroLogin('Erro ao conectar. Tente novamente!');
         } finally {
             setCarregando(false);
         }
     };
 
     return (
-        <View style={styles.container}>
+        <View className="flex-1 items-center justify-center bg-white px-7">
             <Image
                 source={require('../assets/icon.png')}
-                style={styles.image}
+                className="mb-4 h-[110px] w-[110px]"
             />
 
-            <Text style={styles.title}>Login</Text>
-            <Text style={styles.subtitle}>Entre para gerenciar suas senhas</Text>
+            <Text className="mb-2 text-3xl font-bold text-[#6FB3FF]">Login</Text>
+            <Text className="mb-6 text-center text-sm text-[#6FB3FF]">Entre para gerenciar suas senhas</Text>
 
             <TextInput
-                style={styles.input}
+                className="mb-3.5 w-full max-w-md rounded-xl border-2 border-[#4A9BFF] bg-[#E6F7FF] px-3.5 py-3 text-[15px] text-[#6FB3FF]"
                 placeholder="E-mail"
                 placeholderTextColor="#6FB3FF"
                 value={email}
@@ -112,11 +110,11 @@ export default function SignIn({ navigation, route }) {
             />
 
             {email.trim() !== '' && !emailValido && (
-                <Text style={styles.errorText}>Informe um e-mail válido!</Text>
+                <Text className="-mt-1.5 mb-2.5 w-full max-w-md text-[13px] text-[#FF4D4D]">Informe um e-mail válido!</Text>
             )}
 
             <TextInput
-                style={styles.input}
+                className="mb-3.5 w-full max-w-md rounded-xl border-2 border-[#4A9BFF] bg-[#E6F7FF] px-3.5 py-3 text-[15px] text-[#6FB3FF]"
                 placeholder="Senha"
                 placeholderTextColor="#6FB3FF"
                 value={senha}
@@ -125,97 +123,24 @@ export default function SignIn({ navigation, route }) {
             />
 
             {erroLogin !== '' && (
-                <Text style={styles.errorText}>{erroLogin}</Text>
+                <Text className="-mt-1.5 mb-2.5 w-full max-w-md text-[13px] text-[#FF4D4D]">{erroLogin}</Text>
             )}
 
             <Pressable
-                style={[styles.button, !podeEntrar && styles.buttonDisabled]}
+                className={`mb-[18px] mt-1.5 w-full max-w-md rounded-xl border-2 border-[#2A6FB3] bg-[#6FB3FF] py-3 ${!podeEntrar ? 'opacity-50' : ''}`}
                 disabled={!podeEntrar}
                 onPress={entrar}
             >
-                <Text style={styles.buttonText}>
+                <Text className="text-center text-base font-bold text-white">
                     {carregando ? 'Entrando...' : 'Entrar'}
                 </Text>
             </Pressable>
 
             <Pressable onPress={() => navigation.navigate('SignUp')}>
-                <Text style={styles.linkText}>
-                    Não possui conta? <Text style={styles.linkHighlight}>Cadastre-se</Text>
+                <Text className="text-sm text-[#6FB3FF]">
+                    Não possui conta? <Text className="font-bold underline">Cadastre-se</Text>
                 </Text>
             </Pressable>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        paddingHorizontal: 28,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    image: {
-        width: 110,
-        height: 110,
-        marginBottom: 16,
-    },
-    title: {
-        fontSize: 30,
-        fontWeight: 'bold',
-    color: '#6FB3FF',
-        marginBottom: 8,
-    },
-    subtitle: {
-        fontSize: 14,
-    color: '#6FB3FF',
-        marginBottom: 24,
-        textAlign: 'center',
-    },
-    input: {
-        width: '50%',
-        backgroundColor: '#E6F7FF',
-        borderWidth: 2,
-        borderColor: '#4A9BFF',
-        borderRadius: 12,
-        paddingHorizontal: 14,
-        paddingVertical: 12,
-        marginBottom: 14,
-        color: '#6FB3FF',
-        fontSize: 15,
-    },
-    button: {
-        width: '50%',
-        backgroundColor: '#6FB3FF',
-        borderWidth: 2,
-        borderColor: '#2A6FB3',
-        borderRadius: 12,
-        paddingVertical: 12,
-        marginTop: 6,
-        marginBottom: 18,
-    },
-    buttonDisabled: {
-        opacity: 0.5,
-    },
-    buttonText: {
-        color: '#fff',
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    linkText: {
-        color: '#6FB3FF',
-        fontSize: 14,
-    },
-    linkHighlight: {
-        fontWeight: 'bold',
-        textDecorationLine: 'underline',
-    },
-    errorText: {
-        width: '50%',
-        color: '#FF4D4D',
-        fontSize: 13,
-        marginTop: -6,
-        marginBottom: 10,
-    },
-});

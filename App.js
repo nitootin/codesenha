@@ -1,4 +1,5 @@
 import 'react-native-gesture-handler';
+import './global.css';
 import { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -39,15 +40,8 @@ export default function App() {
 
   if (carregando) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: '#fff',
-        }}
-      >
-  <ActivityIndicator size="large" color="#6FB3FF" />
+      <View className="flex-1 items-center justify-center bg-white">
+        <ActivityIndicator size="large" color="#6FB3FF" />
       </View>
     );
   }
@@ -97,7 +91,7 @@ export default function App() {
                   paddingVertical: 4,
                 }}
               >
-                    <Text
+                <Text
                   style={{
                     color: '#6FB3FF',
                     fontWeight: 'bold',
