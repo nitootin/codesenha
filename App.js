@@ -10,6 +10,7 @@ import SignUp from './screens/SignUp';
 import GeradorDeSenha from './screens/GeradorDeSenha';
 import Historico from './screens/Historico';
 import { buscarToken, removerToken } from './services/storage';
+import { OfflineProvider } from './contexts/OfflineContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -47,70 +48,72 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName={rotaInicial}
-        screenOptions={{
-          headerStyle: { backgroundColor: '#fff' },
-          headerTintColor: '#6FB3FF',
-          headerTitleStyle: { fontWeight: 'bold' },
-        }}
-      >
-        <Stack.Screen
-          name="SignIn"
-          component={SignIn}
-          options={{ headerShown: false }}
-        />
+    <OfflineProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName={rotaInicial}
+          screenOptions={{
+            headerStyle: { backgroundColor: '#fff' },
+            headerTintColor: '#6FB3FF',
+            headerTitleStyle: { fontWeight: 'bold' },
+          }}
+        >
+          <Stack.Screen
+            name="SignIn"
+            component={SignIn}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name="SignUp"
-          component={SignUp}
-          options={{ headerShown: false }}
-        />
+          <Stack.Screen
+            name="SignUp"
+            component={SignUp}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name="GeradorDeSenha"
-          component={GeradorDeSenha}
-          options={({ navigation }) => ({
-            title: 'Home',
-            headerLeft: () => null,
-            headerBackVisible: false,
-            gestureEnabled: false,
-            headerRight: () => (
-              <Pressable
-                onPress={async () => {
-                  await removerToken();
+          <Stack.Screen
+            name="GeradorDeSenha"
+            component={GeradorDeSenha}
+            options={({ navigation }) => ({
+              title: 'Home',
+              headerLeft: () => null,
+              headerBackVisible: false,
+              gestureEnabled: false,
+              headerRight: () => (
+                <Pressable
+                  onPress={async () => {
+                    await removerToken();
 
-                  navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'SignIn' }],
-                  });
-                }}
-                style={{
-                  paddingRight: 12,
-                  paddingVertical: 4,
-                }}
-              >
-                <Text
+                    navigation.reset({
+                      index: 0,
+                      routes: [{ name: 'SignIn' }],
+                    });
+                  }}
                   style={{
-                    color: '#6FB3FF',
-                    fontWeight: 'bold',
-                    fontSize: 16,
+                    paddingRight: 12,
+                    paddingVertical: 4,
                   }}
                 >
-                  Sair
-                </Text>
-              </Pressable>
-            ),
-          })}
-        />
+                  <Text
+                    style={{
+                      color: '#6FB3FF',
+                      fontWeight: 'bold',
+                      fontSize: 16,
+                    }}
+                  >
+                    Sair
+                  </Text>
+                </Pressable>
+              ),
+            })}
+          />
 
-        <Stack.Screen
-          name="Historico"
-          component={Historico}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+          <Stack.Screen
+            name="Historico"
+            component={Historico}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </OfflineProvider>
   );
 }
