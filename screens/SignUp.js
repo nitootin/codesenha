@@ -1,100 +1,26 @@
-import { useMemo, useState } from 'react';
-import { View, Text, TextInput, Pressable, Image, Platform } from 'react-native';
+import { View, Text, TextInput, Pressable, Image } from 'react-native';
+import { useAuthStore } from '../stores/authStore';
 
 export default function SignUp({ navigation }) {
-    const [nome, setNome] = useState('');
-    const [email, setEmail] = useState('');
-    const [senha, setSenha] = useState('');
-    const [confirmarSenha, setConfirmarSenha] = useState('');
-    const [carregando, setCarregando] = useState(false);
-    const [erroCadastro, setErroCadastro] = useState('');
+    const nome = useAuthStore((state) => state.cadastroNome);
+    const email = useAuthStore((state) => state.cadastroEmail);
+    const senha = useAuthStore((state) => state.cadastroSenha);
+    const confirmarSenha = useAuthStore((state) => state.cadastroConfirmarSenha);
+    const carregando = useAuthStore((state) => state.cadastroCarregando);
+    const erroCadastro = useAuthStore((state) => state.erroCadastro);
+    const setNome = useAuthStore((state) => state.setCadastroNome);
+    const setEmail = useAuthStore((state) => state.setCadastroEmail);
+    const setSenha = useAuthStore((state) => state.setCadastroSenha);
+    const setConfirmarSenha = useAuthStore((state) => state.setCadastroConfirmarSenha);
+    const registrar = useAuthStore((state) => state.registrar);
+    const emailValido = useAuthStore((state) => state.cadastroEmailValido());
+    const senhasIguais = useAuthStore((state) => state.cadastroSenhasIguais());
+    const podeRegistrar = useAuthStore((state) => state.podeRegistrar());
 
-    const emailValido = useMemo(() => {
-        const emailFormatado = email.trim();
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailFormatado);
-    }, [email]);
-
-    const senhasIguais = senha === confirmarSenha;
-
-    const podeRegistrar =
-        nome.trim() !== '' &&
-        email.trim() !== '' &&
-        senha.trim() !== '' &&
-        confirmarSenha.trim() !== '' &&
-        emailValido &&
-        senhasIguais &&
-        !carregando;
-
-    const handleChangeNome = (valor) => {
-        setNome(valor);
-        if (erroCadastro) {
-            setErroCadastro('');
-        }
-    };
-
-    const handleChangeEmail = (valor) => {
-        setEmail(valor);
-        if (erroCadastro) {
-            setErroCadastro('');
-        }
-    };
-
-    const handleChangeSenha = (valor) => {
-        setSenha(valor);
-        if (erroCadastro) {
-            setErroCadastro('');
-        }
-    };
-
-    const handleChangeConfirmarSenha = (valor) => {
-        setConfirmarSenha(valor);
-        if (erroCadastro) {
-            setErroCadastro('');
-        }
-    };
-
-    const API_BASE = Platform.OS === 'android'
-        ? 'http://10.0.2.2:3000'
-        : 'http://localhost:3000';
-
-    const registrar = async () => {
-        try {
-            setCarregando(true);
-            setErroCadastro('');
-
-            const response = await fetch(`${API_BASE}/signup`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    nome: nome.trim(),
-                    email: email.trim(),
-                    senha: senha.trim(),
-                    confirmarSenha: confirmarSenha.trim(),
-                }),
-            });
-
-            let data = {};
-            try {
-                data = await response.json();
-            } catch (e) {
-                console.log('Erro ao converter resposta do cadastro:', e);
-            }
-
-            if (!response.ok) {
-                setErroCadastro(
-                    data.erro || data.mensagem || 'Não foi possível realizar o cadastro.'
-                );
-                return;
-            }
-
+    const handleRegistrar = async () => {
+        const cadastroOk = await registrar();
+        if (cadastroOk) {
             navigation.navigate('SignIn', { email: email.trim() });
-        } catch (error) {
-            console.log('ERRO FETCH SIGNUP:', error);
-            setErroCadastro('Erro ao conectar. Tente novamente!');
-        } finally {
-            setCarregando(false);
         }
     };
 
@@ -113,7 +39,7 @@ export default function SignUp({ navigation }) {
                 placeholder="Nome"
                 placeholderTextColor="#6FB3FF"
                 value={nome}
-                onChangeText={handleChangeNome}
+                onChangeText={setNome}
             />
 
             <TextInput
@@ -121,14 +47,14 @@ export default function SignUp({ navigation }) {
                 placeholder="E-mail"
                 placeholderTextColor="#6FB3FF"
                 value={email}
-                onChangeText={handleChangeEmail}
+                onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
             />
 
             {email.trim() !== '' && !emailValido && (
-                <Text className="-mt-1.5 mb-2.5 w-full max-w-md text-[13px] text-[#FF4D4D]">Informe um e-mail válido!</Text>
+                <Text className="-mt-1.5 mb-2.5 w-full max-w-md text-[13px] text-[#FF4D4D]">Informe um e-mail valido!</Text>
             )}
 
             <TextInput
@@ -136,7 +62,7 @@ export default function SignUp({ navigation }) {
                 placeholder="Senha"
                 placeholderTextColor="#6FB3FF"
                 value={senha}
-                onChangeText={handleChangeSenha}
+                onChangeText={setSenha}
                 secureTextEntry
             />
 
@@ -145,7 +71,7 @@ export default function SignUp({ navigation }) {
                 placeholder="Confirmar senha"
                 placeholderTextColor="#6FB3FF"
                 value={confirmarSenha}
-                onChangeText={handleChangeConfirmarSenha}
+                onChangeText={setConfirmarSenha}
                 secureTextEntry
             />
 
@@ -160,7 +86,7 @@ export default function SignUp({ navigation }) {
             <Pressable
                 className={`mb-[18px] mt-1.5 w-full max-w-md rounded-xl border-2 border-[#2A6FB3] bg-[#6FB3FF] py-3 ${!podeRegistrar ? 'opacity-50' : ''}`}
                 disabled={!podeRegistrar}
-                onPress={registrar}
+                onPress={handleRegistrar}
             >
                 <Text className="text-center text-base font-bold text-white">
                     {carregando ? 'Cadastrando...' : 'Cadastrar'}
@@ -169,7 +95,7 @@ export default function SignUp({ navigation }) {
 
             <Pressable onPress={() => navigation.navigate('SignIn')}>
                 <Text className="text-sm text-[#6FB3FF]">
-                    Já possui conta? <Text className="font-bold underline">Entrar</Text>
+                    Ja possui conta? <Text className="font-bold underline">Entrar</Text>
                 </Text>
             </Pressable>
         </View>

@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import './global.css';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Pressable, Text, View, ActivityIndicator } from 'react-native';
@@ -9,36 +9,21 @@ import SignIn from './screens/SignIn';
 import SignUp from './screens/SignUp';
 import GeradorDeSenha from './screens/GeradorDeSenha';
 import Historico from './screens/Historico';
-import { buscarToken, removerToken } from './services/storage';
+import { useAuthStore } from './stores/authStore';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [carregando, setCarregando] = useState(true);
-  const [rotaInicial, setRotaInicial] = useState('SignIn');
+  const carregandoInicial = useAuthStore((state) => state.carregandoInicial);
+  const autenticado = useAuthStore((state) => state.autenticado);
+  const inicializarAuth = useAuthStore((state) => state.inicializarAuth);
+  const logout = useAuthStore((state) => state.logout);
 
   useEffect(() => {
-    async function verificarLogin() {
-      try {
-        const token = await buscarToken();
+    inicializarAuth();
+  }, [inicializarAuth]);
 
-        if (token) {
-          setRotaInicial('GeradorDeSenha');
-        } else {
-          setRotaInicial('SignIn');
-        }
-      } catch (error) {
-        console.error('Erro ao verificar token:', error);
-        setRotaInicial('SignIn');
-      } finally {
-        setCarregando(false);
-      }
-    }
-
-    verificarLogin();
-  }, []);
-
-  if (carregando) {
+  if (carregandoInicial) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
         <ActivityIndicator size="large" color="#6FB3FF" />
@@ -49,7 +34,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={rotaInicial}
+        initialRouteName={autenticado ? 'GeradorDeSenha' : 'SignIn'}
         screenOptions={{
           headerStyle: { backgroundColor: '#fff' },
           headerTintColor: '#6FB3FF',
@@ -79,7 +64,7 @@ export default function App() {
             headerRight: () => (
               <Pressable
                 onPress={async () => {
-                  await removerToken();
+                  await logout();
 
                   navigation.reset({
                     index: 0,

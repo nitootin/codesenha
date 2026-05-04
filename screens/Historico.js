@@ -1,78 +1,27 @@
-import { View, Text, Pressable, Platform, ScrollView } from 'react-native';
-import { useState, useCallback } from 'react';
+import { View, Text, Pressable, ScrollView } from 'react-native';
+import { useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import * as Clipboard from 'expo-clipboard';
-import { buscarHistorico, salvarHistorico, buscarToken } from '../services/storage';
 import ShowIcon from '../components/icons/ShowIcon';
 import CopyIcon from '../components/icons/CopyIcon';
+import { useHistoryStore } from '../stores/historyStore';
 
 export default function Historico({ navigation }) {
-    const [historico, setHistorico] = useState([]);
-    const [visiveis, setVisiveis] = useState({});
-
-    const carregarHistorico = async () => {
-        try {
-            const token = await buscarToken();
-            if (token) {
-                const API_BASE = Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000';
-                const res = await fetch(`${API_BASE}/historico`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                if (res.ok) {
-                    const dados = await res.json();
-                    setHistorico(dados);
-                    setVisiveis({});
-                    return;
-                }
-            }
-        } catch (e) {
-            console.log('Erro ao buscar histórico do backend:', e);
-        }
-
-        const dadosLocais = await buscarHistorico();
-        setHistorico(dadosLocais);
-        setVisiveis({});
-    };
+    const historico = useHistoryStore((state) => state.historico);
+    const visiveis = useHistoryStore((state) => state.visiveis);
+    const carregarHistorico = useHistoryStore((state) => state.carregarHistorico);
+    const alternarVisibilidade = useHistoryStore((state) => state.alternarVisibilidade);
+    const copiarSenha = useHistoryStore((state) => state.copiarSenha);
+    const deletarSenha = useHistoryStore((state) => state.deletarSenha);
 
     useFocusEffect(
         useCallback(() => {
             carregarHistorico();
-        }, [])
+        }, [carregarHistorico])
     );
-
-    const alternarVisibilidade = (id) => {
-        setVisiveis((estadoAnterior) => ({
-            ...estadoAnterior,
-            [id]: !estadoAnterior[id],
-        }));
-    };
-
-    const copiarSenha = async (senha) => {
-        await Clipboard.setStringAsync(senha);
-    };
-
-    const deletarSenha = async (id) => {
-        const novoHistorico = historico.filter((item) => item.id !== id);
-        setHistorico(novoHistorico);
-        await salvarHistorico(novoHistorico);
-
-        try {
-            const token = await buscarToken();
-            if (token) {
-                const API_BASE = Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000';
-                await fetch(`${API_BASE}/historico/${id}`, {
-                    method: 'DELETE',
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-            }
-        } catch (e) {
-            console.log('Erro ao deletar histórico no backend:', e);
-        }
-    };
 
     return (
         <View className="flex-1 items-center bg-white px-6 pt-[55px]">
-            <Text className="mb-7 text-[28px] font-bold text-[#6FB3FF]">Histórico de senhas</Text>
+            <Text className="mb-7 text-[28px] font-bold text-[#6FB3FF]">Historico de senhas</Text>
 
             <ScrollView
                 className="w-full max-w-2xl"
@@ -80,7 +29,7 @@ export default function Historico({ navigation }) {
                 showsVerticalScrollIndicator={false}
             >
                 {historico.length === 0 ? (
-                    <Text className="mt-2.5 font-medium text-[#6FB3FF]">Você não possui senhas!</Text>
+                    <Text className="mt-2.5 font-medium text-[#6FB3FF]">Voce nao possui senhas!</Text>
                 ) : (
                     historico.map((item) => (
                         <View

@@ -1,90 +1,32 @@
-import { useEffect, useMemo, useState } from 'react';
-import { View, Text, TextInput, Pressable, Image, Platform } from 'react-native';
-import { salvarToken } from '../services/storage';
+import { useEffect } from 'react';
+import { View, Text, TextInput, Pressable, Image } from 'react-native';
+import { useAuthStore } from '../stores/authStore';
 
 export default function SignIn({ navigation, route }) {
-    const [email, setEmail] = useState('');
-    const [senha, setSenha] = useState('');
-    const [carregando, setCarregando] = useState(false);
-    const [erroLogin, setErroLogin] = useState('');
+    const email = useAuthStore((state) => state.loginEmail);
+    const senha = useAuthStore((state) => state.loginSenha);
+    const carregando = useAuthStore((state) => state.loginCarregando);
+    const erroLogin = useAuthStore((state) => state.erroLogin);
+    const setEmail = useAuthStore((state) => state.setLoginEmail);
+    const setSenha = useAuthStore((state) => state.setLoginSenha);
+    const preencherLoginEmail = useAuthStore((state) => state.preencherLoginEmail);
+    const entrar = useAuthStore((state) => state.entrar);
+    const emailValido = useAuthStore((state) => state.loginEmailValido());
+    const podeEntrar = useAuthStore((state) => state.podeEntrar());
 
     useEffect(() => {
         if (route.params?.email) {
-            setEmail(route.params.email);
+            preencherLoginEmail(route.params.email);
         }
-    }, [route.params?.email]);
+    }, [preencherLoginEmail, route.params?.email]);
 
-    const emailValido = useMemo(() => {
-        const emailFormatado = email.trim();
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailFormatado);
-    }, [email]);
-
-    const podeEntrar =
-        email.trim() !== '' &&
-        senha.trim() !== '' &&
-        emailValido &&
-        !carregando;
-
-    const handleChangeEmail = (valor) => {
-        setEmail(valor);
-        if (erroLogin) {
-            setErroLogin('');
-        }
-    };
-
-    const handleChangeSenha = (valor) => {
-        setSenha(valor);
-        if (erroLogin) {
-            setErroLogin('');
-        }
-    };
-
-    const API_BASE = Platform.OS === 'android'
-        ? 'http://10.0.2.2:3000'
-        : 'http://localhost:3000';
-
-    const entrar = async () => {
-        try {
-            setCarregando(true);
-            setErroLogin('');
-
-            const response = await fetch(`${API_BASE}/signin`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: email.trim(),
-                    senha: senha.trim(),
-                }),
-            });
-
-            let data = {};
-            try {
-                data = await response.json();
-            } catch (e) {
-                console.log('Erro ao converter resposta do login:', e);
-            }
-
-            if (!response.ok) {
-                console.log('ERRO LOGIN:', data);
-                setErroLogin(
-                    data.erro || data.mensagem || 'E-mail ou senha inválidos.'
-                );
-                return;
-            }
-
-            await salvarToken(data.token);
-
+    const handleEntrar = async () => {
+        const loginOk = await entrar();
+        if (loginOk) {
             navigation.reset({
                 index: 0,
                 routes: [{ name: 'GeradorDeSenha' }],
             });
-        } catch (error) {
-            console.log('ERRO FETCH SIGNIN:', error);
-            setErroLogin('Erro ao conectar. Tente novamente!');
-        } finally {
-            setCarregando(false);
         }
     };
 
@@ -103,14 +45,14 @@ export default function SignIn({ navigation, route }) {
                 placeholder="E-mail"
                 placeholderTextColor="#6FB3FF"
                 value={email}
-                onChangeText={handleChangeEmail}
+                onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
             />
 
             {email.trim() !== '' && !emailValido && (
-                <Text className="-mt-1.5 mb-2.5 w-full max-w-md text-[13px] text-[#FF4D4D]">Informe um e-mail válido!</Text>
+                <Text className="-mt-1.5 mb-2.5 w-full max-w-md text-[13px] text-[#FF4D4D]">Informe um e-mail valido!</Text>
             )}
 
             <TextInput
@@ -118,7 +60,7 @@ export default function SignIn({ navigation, route }) {
                 placeholder="Senha"
                 placeholderTextColor="#6FB3FF"
                 value={senha}
-                onChangeText={handleChangeSenha}
+                onChangeText={setSenha}
                 secureTextEntry
             />
 
@@ -129,7 +71,7 @@ export default function SignIn({ navigation, route }) {
             <Pressable
                 className={`mb-[18px] mt-1.5 w-full max-w-md rounded-xl border-2 border-[#2A6FB3] bg-[#6FB3FF] py-3 ${!podeEntrar ? 'opacity-50' : ''}`}
                 disabled={!podeEntrar}
-                onPress={entrar}
+                onPress={handleEntrar}
             >
                 <Text className="text-center text-base font-bold text-white">
                     {carregando ? 'Entrando...' : 'Entrar'}
@@ -138,7 +80,7 @@ export default function SignIn({ navigation, route }) {
 
             <Pressable onPress={() => navigation.navigate('SignUp')}>
                 <Text className="text-sm text-[#6FB3FF]">
-                    Não possui conta? <Text className="font-bold underline">Cadastre-se</Text>
+                    Nao possui conta? <Text className="font-bold underline">Cadastre-se</Text>
                 </Text>
             </Pressable>
         </View>
